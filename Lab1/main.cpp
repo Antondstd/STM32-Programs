@@ -1,65 +1,36 @@
 #include "hal.h"
 
+#include "hal_driver.h"
 
-void resetAllDioids(){
-    HAL_GPIO_WritePin(GPIOD, GPIO_PIN_13, GPIO_PIN_RESET);
-    HAL_GPIO_WritePin(GPIOD, GPIO_PIN_14, GPIO_PIN_RESET);
-    HAL_GPIO_WritePin(GPIOD, GPIO_PIN_15, GPIO_PIN_RESET);
-}
-
-void playAnimation() {
-    HAL_GPIO_WritePin(GPIOD, GPIO_PIN_13, GPIO_PIN_SET);
-    HAL_GPIO_WritePin(GPIOD, GPIO_PIN_14, GPIO_PIN_SET);
-    HAL_GPIO_WritePin(GPIOD, GPIO_PIN_15, GPIO_PIN_RESET);
-    HAL_Delay(500);
-    HAL_GPIO_WritePin(GPIOD, GPIO_PIN_13, GPIO_PIN_RESET);
-    HAL_GPIO_WritePin(GPIOD, GPIO_PIN_14, GPIO_PIN_RESET);
-    HAL_Delay(500);
-    HAL_GPIO_WritePin(GPIOD, GPIO_PIN_13, GPIO_PIN_SET);
-    HAL_GPIO_WritePin(GPIOD, GPIO_PIN_14, GPIO_PIN_SET);
-    HAL_Delay(500);
-    HAL_GPIO_WritePin(GPIOD, GPIO_PIN_13, GPIO_PIN_RESET);
-    HAL_GPIO_WritePin(GPIOD, GPIO_PIN_14, GPIO_PIN_RESET);
-    HAL_Delay(500);
-    HAL_GPIO_WritePin(GPIOD, GPIO_PIN_13, GPIO_PIN_SET);
-    HAL_GPIO_WritePin(GPIOD, GPIO_PIN_14, GPIO_PIN_SET);
-    HAL_Delay(500);
-	resetAllDioids();
-}
-
-void showCurrentCountOnDioids(int count){
+void showCurrentCountOnDiodes(int count) {
     resetAllDioids();
     switch (count) {
-        case 1:{
-            HAL_GPIO_WritePin(GPIOD, GPIO_PIN_15, GPIO_PIN_SET);
+        case 1: {
+            setLightRedDiode();
             break;
         }
-        case 2:{
-            HAL_GPIO_WritePin(GPIOD, GPIO_PIN_13, GPIO_PIN_SET);
+        case 2: {
+            setLightGreenDiode();
             break;
         }
-        case 3:{
-            HAL_GPIO_WritePin(GPIOD, GPIO_PIN_13, GPIO_PIN_SET);
-            HAL_GPIO_WritePin(GPIOD, GPIO_PIN_15, GPIO_PIN_SET);
+        case 3: {
+            setLightRedDiode();
+            setLightGreenDiode();
             break;
         }
         default: {
-            HAL_GPIO_WritePin(GPIOD, GPIO_PIN_13, GPIO_PIN_RESET);
-            HAL_GPIO_WritePin(GPIOD, GPIO_PIN_15, GPIO_PIN_RESET);
+            setOffGreenDiode();
+            setOffRedDiode();
             break;
         }
     }
 }
 
-void showOverflow(int overFlow){
+void showOverflow(int overFlow) {
     resetAllDioids();
-	playAnimation();
-    HAL_Delay(500);
-    for (int i =0;i < overFlow;i++){
-        HAL_GPIO_WritePin(GPIOD, GPIO_PIN_13, GPIO_PIN_SET);
-        HAL_Delay(500);
-        HAL_GPIO_WritePin(GPIOD, GPIO_PIN_13, GPIO_PIN_RESET);
-		HAL_Delay(500);
+    playAnimation();
+    for (int i = 0; i < overFlow; i++) {
+        blinkGreenDiode();
     }
 }
 
@@ -73,21 +44,20 @@ int umain() {
 
     HAL_GPIO_WritePin(GPIOC, GPIO_PIN_15, GPIO_PIN_RESET);
     while (1) {
-        state = HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_15);
+        state = getButtonState();
         if (!state) {
             msTick++;
-
         } else {
             if (msTick > longPressTime) {
                 currentCount--;
-				if (currentCount < 0){
-					overflow--;
-					if (overflow < 0)
-						overflow = 0;
-					showOverflow(overflow);
-					currentCount = 3;
-                    showCurrentCountOnDioids(currentCount);
-				}
+                if (currentCount < 0) {
+                    overflow--;
+                    if (overflow < 0)
+                        overflow = 0;
+                    showOverflow(overflow);
+                    currentCount = 3;
+                    showCurrentCountOnDiodes(currentCount);
+                }
             } else {
                 if (msTick > shortPressTime) {
                     currentCount++;
@@ -95,10 +65,9 @@ int umain() {
                         overflow++;
                         showOverflow(overflow);
                         currentCount = 0;
-                        showCurrentCountOnDioids(currentCount);
-                    }
-                    else{
-                        showCurrentCountOnDioids(currentCount);
+                        showCurrentCountOnDiodes(currentCount);
+                    } else {
+                        showCurrentCountOnDiodes(currentCount);
                     }
                 }
             }
