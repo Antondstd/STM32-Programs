@@ -56,7 +56,6 @@ int umain() {
                         overflow = 0;
                     showOverflow(overflow);
                     currentCount = 3;
-                    showCurrentCountOnDiodes(currentCount);
                 }
             } else {
                 if (msTick > shortPressTime) {
@@ -65,13 +64,11 @@ int umain() {
                         overflow++;
                         showOverflow(overflow);
                         currentCount = 0;
-                        showCurrentCountOnDiodes(currentCount);
-                    } else {
-                        showCurrentCountOnDiodes(currentCount);
                     }
                 }
             }
             msTick = 0;
+			showCurrentCountOnDiodes(currentCount);
         }
 
     }
