@@ -1,7 +1,4 @@
-//
-// Created by ad3st on 19.09.2021.
-//
-#include "hal.h"
+#include "gpio.h"
 #include "hal_driver.h"
 
 void resetAllDioids() {
@@ -52,8 +49,12 @@ void playAnimation() {
     }
 }
 
-bool getButtonState() {
+int getButtonState() {
     return HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_15);
+}
+
+long getCurrentTime(){
+	return HAL_GetTick();
 }
 
 void blinkGreenDiode() {

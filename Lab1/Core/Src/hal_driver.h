@@ -1,7 +1,3 @@
-//
-// Created by ad3st on 19.09.2021.
-//
-
 #ifndef LAB1_HAL_DRIVER_H
 #define LAB1_HAL_DRIVER_H
 
@@ -23,8 +19,10 @@ void delay(int ms);
 
 void playAnimation();
 
-bool getButtonState();
+int getButtonState();
 
 void blinkGreenDiode();
+
+long getCurrentTime();
 
 #endif //LAB1_HAL_DRIVER_H
