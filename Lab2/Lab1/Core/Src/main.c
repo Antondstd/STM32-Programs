@@ -71,6 +71,13 @@ enum MathOperation {
 int mode = 0;
 char ch[] = "F";
 char message[50] = "";
+char mode0[] = "Mode: Preriv \n\r";
+char mode1[] = "Mode: Bez Preriv \n\r";
+short isFirst = 1;
+short counter = 0;
+short firstOperand = 0;
+short secondOperand = 0;
+enum MathOperation operation = NONE;
 
 short getNumber(char ch) {
     short asciNum = ch;
@@ -129,15 +136,15 @@ short makeMathOperation(enum MathOperation operation, short firstOperand, short 
 }
 
 void
-resetCalc(short *isFirst, short *counter, short *firstOperand, short *secondOperand, enum MathOperation *operation) {
-    *isFirst = 1;
-    *counter = 0;
-    *firstOperand = 0;
-    *secondOperand = 0;
-    *operation = NONE;
+resetCalc() {
+    isFirst = 1;
+    counter = 0;
+    firstOperand = 0;
+    secondOperand = 0;
+    operation = NONE;
 }
 
-char errorMessage[] = "ERROR\n\r";
+char errorMessage[] = "\n\rERROR\n\r";
 
 void sendMessage(char *message, int size) {
     if (mode)
@@ -154,19 +161,10 @@ void sendError() {
     sendMessage(errorMessage, sizeof(errorMessage) - 1);
 }
 
-void sendErrorAndReset(short *isFirst, short *counter, short *firstOperand, short *secondOperand,
-                       enum MathOperation *operation) {
+void sendErrorAndReset() {
     sendError();
-    resetCalc(isFirst, counter, firstOperand, secondOperand, operation);
+    resetCalc();
 }
-
-char mode0[] = "Mode: Preriv \n\r";
-char mode1[] = "Mode: Bez Preriv \n\r";
-short isFirst = 1;
-short counter = 0;
-short firstOperand = 0;
-short secondOperand = 0;
-enum MathOperation operation = NONE;
 
 void handle_calc() {
     sendMessage(ch, sizeof(ch) - 1);
@@ -199,9 +197,9 @@ void handle_calc() {
                 }
                 case DIVISION: {
                     if (secondOperand == 0) {
-                        sprintf(message, "Cant divide by zero\n\r");
+                        sprintf(message, "\n\rCant divide by zero\n\r");
                         sendMessage(message, sizeof(message) - 1);
-                        resetCalc(&isFirst, &counter, &firstOperand, &secondOperand, &operation);
+                        resetCalc();
                         return;
                     }
                     testOverflow = firstOperand / secondOperand;
@@ -214,12 +212,12 @@ void handle_calc() {
             else
                 sprintf(message, "ERROR\n\r");
             sendMessage(message, sizeof(message) - 1);
-            resetCalc(&isFirst, &counter, &firstOperand, &secondOperand, &operation);
+            resetCalc();
             return;
         }
     }
     if (operationBuf != NONE || counter > 4) {
-        sendErrorAndReset(&isFirst, &counter, &firstOperand, &secondOperand, &operation);
+        sendErrorAndReset();
         return;
     }
 
@@ -229,20 +227,21 @@ void handle_calc() {
         if (isFirst) {
             short numberBuf = checkNumbertoOverflow(firstOperand, number);
             if (numberBuf == -1) {
-                sendErrorAndReset(&isFirst, &counter, &firstOperand, &secondOperand, &operation);
+                sendErrorAndReset();
                 return;
             }
             firstOperand = numberBuf;
         } else {
             short numberBuf = checkNumbertoOverflow(secondOperand, number);
             if (numberBuf == -1) {
-                sendErrorAndReset(&isFirst, &counter, &firstOperand, &secondOperand, &operation);
+                sendErrorAndReset();
+                return;
             }
             secondOperand = numberBuf;
         }
         counter++;
     } else {
-        sendError();
+        sendErrorAndReset();
     }
 }
 
