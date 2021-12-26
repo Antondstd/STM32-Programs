@@ -1,0 +1,8 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="OCD Lab1" type="com.jetbrains.cidr.embedded.openocd.conf.type" factoryName="com.jetbrains.cidr.embedded.openocd.conf.factory" PASS_PARENT_ENVS_2="true" PROJECT_NAME="Project" TARGET_NAME="Lab1.elf" RUN_TARGET_PROJECT_NAME="Project" RUN_TARGET_NAME="Lab1.elf">
+    <openocd gdb-port="3333" telnet-port="4444" reset-type="INIT" download-type="UPDATED_ONLY" />
+    <method v="2">
+      <option name="CLION.COMPOUND.BUILD" enabled="true" />
+    </method>
+  </configuration>
+</component>
